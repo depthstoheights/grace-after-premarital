@@ -1,0 +1,2090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <title>Grace After - Depths to Heights</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #7C3AED;
+            --secondary: #DB2777;
+            --accent: #FBBF24;
+            --success: #059669;
+            --danger: #DC2626;
+            --dark: #18181B;
+            --light: #27272A;
+            --text: #FAFAFA;
+            --text-dim: #A1A1AA;
+            --border: rgba(255,255,255,0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(180deg, #18181B 0%, #27272A 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(24, 24, 27, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 15px 20px;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .music-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            border: 1px solid var(--border);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .music-btn:hover {
+            background: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .music-btn.playing {
+            background: var(--primary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 80px 20px 100px;
+            animation: fadeIn 0.5s;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Home Screen */
+        .hero {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .hero-verse {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2.5rem;
+            line-height: 1.3;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .main-menu {
+            display: grid;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .menu-card {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            background: rgba(124, 58, 237, 0.1);
+        }
+
+        .menu-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .menu-content {
+            flex: 1;
+            text-align: left;
+        }
+
+        .menu-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .menu-desc {
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* Devotional Screen */
+        .devotional-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .devotional-date {
+            color: var(--text-dim);
+            margin-bottom: 10px;
+        }
+
+        .devotional-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .scripture-box {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(219, 39, 119, 0.1));
+            border: 1px solid var(--primary);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .scripture-ref {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .scripture-text {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.3rem;
+            line-height: 1.8;
+            font-style: italic;
+        }
+
+        .teaching-box {
+            background: var(--light);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .teaching-title {
+            color: var(--accent);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .teaching-content {
+            line-height: 1.8;
+            color: var(--text-dim);
+        }
+
+        .affirmation-box {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .affirmation-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .affirmation-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .devotional-nav {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .dev-nav-btn {
+            padding: 15px;
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .dev-nav-btn:hover {
+            background: var(--primary);
+        }
+
+        /* Forgiveness Path */
+        .path-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .path-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .steps-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .step-dot {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--light);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 2;
+        }
+
+        .step-dot.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        .step-dot.completed {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .step-line {
+            position: absolute;
+            height: 2px;
+            background: var(--border);
+            width: 60px;
+            z-index: 1;
+        }
+
+        .step-line.line1 {
+            left: calc(50% - 55px);
+        }
+
+        .step-line.line2 {
+            right: calc(50% - 55px);
+        }
+
+        .step-content {
+            display: none;
+            animation: slideIn 0.5s;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .step-box {
+            background: var(--light);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .step-instruction {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+
+        .confession-area {
+            background: rgba(124, 58, 237, 0.05);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .confession-input {
+            width: 100%;
+            min-height: 150px;
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .confession-input:focus {
+            outline: none;
+        }
+
+        .confession-input::placeholder {
+            color: var(--text-dim);
+            opacity: 0.6;
+        }
+
+        .step-button {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .step-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+        }
+
+        .verse-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .verse-item {
+            padding: 15px;
+            margin-bottom: 15px;
+            background: rgba(5, 150, 105, 0.1);
+            border-left: 3px solid var(--success);
+            border-radius: 8px;
+        }
+
+        .verse-item strong {
+            color: var(--success);
+        }
+
+        .identity-list {
+            display: grid;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .identity-item {
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(219, 39, 119, 0.1));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .identity-icon {
+            font-size: 1.5rem;
+        }
+
+        .identity-text {
+            flex: 1;
+        }
+
+        .identity-verse {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-top: 5px;
+        }
+
+        /* Pregnancy Support */
+        .support-intro {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(219, 39, 119, 0.1));
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+
+        .support-intro h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .support-cards {
+            display: grid;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .support-card {
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+
+        .support-card:hover {
+            border-color: var(--primary);
+        }
+
+        .support-card-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .support-card-content {
+            line-height: 1.8;
+            color: var(--text-dim);
+        }
+
+        .promise-card {
+            background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(124, 58, 237, 0.1));
+            border: 1px solid var(--success);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .promise-verse {
+            font-style: italic;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .promise-ref {
+            text-align: right;
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .resource-links {
+            background: var(--light);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .resource-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .resource-item {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .resource-item:last-child {
+            border-bottom: none;
+        }
+
+        .resource-item:hover {
+            padding-left: 10px;
+            color: var(--primary);
+        }
+
+        /* Community Screen */
+        .community-intro {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .community-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .share-box {
+            background: var(--light);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .share-prompt {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .share-input {
+            width: 100%;
+            min-height: 120px;
+            background: rgba(124, 58, 237, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            color: var(--text);
+            font-size: 1rem;
+            line-height: 1.6;
+            resize: vertical;
+            font-family: inherit;
+            margin-bottom: 20px;
+        }
+
+        .share-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .share-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .share-btn {
+            padding: 15px;
+            background: var(--light);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .share-btn:hover {
+            background: var(--primary);
+        }
+
+        .share-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+        }
+
+        .saved-stories {
+            margin-top: 40px;
+        }
+
+        .stories-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .story-card {
+            background: var(--light);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .story-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .story-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .story-meta {
+            flex: 1;
+        }
+
+        .story-author {
+            font-weight: 600;
+        }
+
+        .story-date {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .story-content {
+            line-height: 1.8;
+            color: var(--text-dim);
+        }
+
+        .story-tag {
+            display: inline-block;
+            padding: 5px 12px;
+            background: rgba(124, 58, 237, 0.2);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            color: var(--primary);
+        }
+
+        /* Resources Screen */
+        .resources-grid {
+            display: grid;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .resource-section {
+            background: var(--light);
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .resource-section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .resource-list {
+            list-style: none;
+        }
+
+        .resource-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .resource-list li:last-child {
+            border-bottom: none;
+        }
+
+        .resource-list li:hover {
+            padding-left: 15px;
+            color: var(--primary);
+        }
+
+        .expanded-content {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(124, 58, 237, 0.05);
+            border-radius: 12px;
+            line-height: 1.8;
+        }
+
+        .expanded-content.show {
+            display: block;
+        }
+
+        /* Crisis Screen */
+        .crisis-container {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .crisis-icon-large {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--danger), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            font-size: 3rem;
+        }
+
+        .crisis-title {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .crisis-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--text-dim);
+            margin-bottom: 30px;
+        }
+
+        .crisis-box {
+            background: rgba(220, 38, 38, 0.1);
+            border: 2px solid var(--danger);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .crisis-box h3 {
+            color: var(--danger);
+            margin-bottom: 15px;
+        }
+
+        .crisis-steps {
+            text-align: left;
+            background: var(--light);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .crisis-step {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .crisis-step:last-child {
+            border-bottom: none;
+        }
+
+        .crisis-step h4 {
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        /* Info Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--light);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalSlide 0.3s;
+        }
+
+        @keyframes modalSlide {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--dark);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: var(--danger);
+        }
+
+        .modal-section {
+            margin-bottom: 25px;
+        }
+
+        .modal-section h3 {
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .modal-section ul {
+            list-style: none;
+            padding-left: 20px;
+        }
+
+        .modal-section li {
+            position: relative;
+            margin-bottom: 10px;
+            padding-left: 25px;
+        }
+
+        .modal-section li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(24, 24, 27, 0.98);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+        }
+
+        .nav-items {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-dim);
+            min-width: 60px;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Message Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            z-index: 3000;
+            opacity: 0;
+            transition: all 0.5s;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* Donate Button */
+        .donate-button {
+            background: linear-gradient(135deg, var(--accent), var(--primary));
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-block;
+            text-decoration: none;
+            margin: 20px 0;
+        }
+
+        .donate-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-verse {
+                font-size: 1.8rem;
+            }
+
+            .devotional-nav {
+                grid-template-columns: 1fr;
+            }
+
+            .share-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .nav-label {
+                font-size: 0.7rem;
+            }
+
+            .hero-verse {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Grace After</div>
+            <button class="music-btn" id="musicBtn" onclick="toggleMusic()">
+                <span id="musicIcon">🎵</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Home Screen -->
+    <div class="screen active" id="homeScreen">
+        <div class="container">
+            <div class="hero">
+                <h1 class="hero-verse">"Your past does not define you.<br>Christ's grace does."</h1>
+                <p class="hero-subtitle">There is therefore now no condemnation for those who are in Christ Jesus - Romans 8:1</p>
+            </div>
+
+            <div class="main-menu">
+                <div class="menu-card" onclick="navigateTo('devotionalScreen')">
+                    <div class="menu-icon">📖</div>
+                    <div class="menu-content">
+                        <h3 class="menu-title">Daily Grace Devotional</h3>
+                        <p class="menu-desc">Scripture and teachings on forgiveness, healing, and restoration</p>
+                    </div>
+                </div>
+
+                <div class="menu-card" onclick="navigateTo('pathScreen')">
+                    <div class="menu-icon">🕊️</div>
+                    <div class="menu-content">
+                        <h3 class="menu-title">Forgiveness Path</h3>
+                        <p class="menu-desc">Three-step journey from confession to complete restoration</p>
+                    </div>
+                </div>
+
+                <div class="menu-card" onclick="navigateTo('supportScreen')">
+                    <div class="menu-icon">💝</div>
+                    <div class="menu-content">
+                        <h3 class="menu-title">Pregnancy & Life Support</h3>
+                        <p class="menu-desc">Encouragement and resources for unexpected pregnancy</p>
+                    </div>
+                </div>
+
+                <div class="menu-card" onclick="navigateTo('communityScreen')">
+                    <div class="menu-icon">🤝</div>
+                    <div class="menu-content">
+                        <h3 class="menu-title">Community Stories</h3>
+                        <p class="menu-desc">Share and read testimonies of God's restoration</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Grace Devotional Screen -->
+    <div class="screen" id="devotionalScreen">
+        <div class="container">
+            <div class="devotional-header">
+                <div class="devotional-date" id="devDate">Loading date...</div>
+                <h2 class="devotional-title">Today's Grace</h2>
+            </div>
+
+            <div class="scripture-box">
+                <div class="scripture-ref" id="scriptureRef">1 John 1:9</div>
+                <div class="scripture-text" id="scriptureText">
+                    "If we confess our sins, he is faithful and just and will forgive us our sins and purify us from all unrighteousness."
+                </div>
+            </div>
+
+            <div class="teaching-box">
+                <h3 class="teaching-title" id="teachingTitle">Understanding Complete Forgiveness</h3>
+                <div class="teaching-content" id="teachingContent">
+                    When God forgives, He forgives completely. Your confession doesn't earn His forgiveness—it positions you to receive what Jesus already purchased on the cross. The guilt you feel doesn't reflect God's view of you. He sees you through the blood of Christ: pure, holy, and deeply loved. Today, release the weight of shame and step into the freedom He offers.
+                </div>
+            </div>
+
+            <div class="affirmation-box">
+                <div class="affirmation-label">Today's Affirmation</div>
+                <div class="affirmation-text" id="affirmationText">
+                    I am forgiven, restored, and made new in Christ
+                </div>
+            </div>
+
+            <div class="devotional-nav">
+                <button class="dev-nav-btn" onclick="previousDevotional()">← Previous Day</button>
+                <button class="dev-nav-btn" onclick="nextDevotional()">Next Day →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgiveness Path Screen -->
+    <div class="screen" id="pathScreen">
+        <div class="container">
+            <div class="path-header">
+                <h2 class="path-title">Your Journey to Freedom</h2>
+                <p class="hero-subtitle">Three steps to complete restoration</p>
+            </div>
+
+            <div class="steps-indicator">
+                <div class="step-line line1"></div>
+                <div class="step-line line2"></div>
+                <div class="step-dot active" id="step1Dot" onclick="showStep(1)">1</div>
+                <div class="step-dot" id="step2Dot" onclick="showStep(2)">2</div>
+                <div class="step-dot" id="step3Dot" onclick="showStep(3)">3</div>
+            </div>
+
+            <!-- Step 1: Confession -->
+            <div class="step-content active" id="step1Content">
+                <div class="step-box">
+                    <h2 style="text-align: center; margin-bottom: 20px;">Step 1: Honest Confession</h2>
+                    <p class="step-instruction">
+                        Confession isn't about informing God—He already knows. It's about agreeing with Him about your sin and opening your heart to His healing. Be honest, be specific, and trust His love.
+                    </p>
+                    <div class="confession-area">
+                        <textarea 
+                            class="confession-input" 
+                            id="confessionText"
+                            placeholder="Share your heart with God here. This is private between you and Him. Be honest about your struggles, your guilt, and your need for His grace..."
+                        ></textarea>
+                    </div>
+                    <button class="step-button" onclick="completeStep1()">
+                        Release This to God
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Receive Forgiveness -->
+            <div class="step-content" id="step2Content">
+                <div class="step-box">
+                    <h2 style="text-align: center; margin-bottom: 20px;">Step 2: Receive Complete Forgiveness</h2>
+                    <p class="step-instruction">
+                        Your confession has been heard. Now receive what God freely gives. Meditate on these truths:
+                    </p>
+                    <ul class="verse-list">
+                        <li class="verse-item">
+                            <strong>Psalm 103:12</strong> - "As far as the east is from the west, so far has he removed our transgressions from us."
+                        </li>
+                        <li class="verse-item">
+                            <strong>Isaiah 43:25</strong> - "I, even I, am he who blots out your transgressions, for my own sake, and remembers your sins no more."
+                        </li>
+                        <li class="verse-item">
+                            <strong>Micah 7:19</strong> - "You will tread our sins underfoot and hurl all our iniquities into the depths of the sea."
+                        </li>
+                        <li class="verse-item">
+                            <strong>Hebrews 8:12</strong> - "For I will forgive their wickedness and will remember their sins no more."
+                        </li>
+                    </ul>
+                    <button class="step-button" onclick="completeStep2()">
+                        I Receive God's Complete Forgiveness
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Walk Restored -->
+            <div class="step-content" id="step3Content">
+                <div class="step-box">
+                    <h2 style="text-align: center; margin-bottom: 20px;">Step 3: Walk in Your New Identity</h2>
+                    <p class="step-instruction">
+                        You are not who you were. You are who God says you are. Embrace these truths about your identity:
+                    </p>
+                    <div class="identity-list">
+                        <div class="identity-item">
+                            <span class="identity-icon">👑</span>
+                            <div class="identity-text">
+                                <strong>You are a child of God</strong>
+                                <div class="identity-verse">1 John 3:1 - "See what great love the Father has lavished on us"</div>
+                            </div>
+                        </div>
+                        <div class="identity-item">
+                            <span class="identity-icon">✨</span>
+                            <div class="identity-text">
+                                <strong>You are a new creation</strong>
+                                <div class="identity-verse">2 Corinthians 5:17 - "The old has gone, the new is here"</div>
+                            </div>
+                        </div>
+                        <div class="identity-item">
+                            <span class="identity-icon">💎</span>
+                            <div class="identity-text">
+                                <strong>You are chosen and precious</strong>
+                                <div class="identity-verse">1 Peter 2:9 - "You are a chosen people, a royal priesthood"</div>
+                            </div>
+                        </div>
+                        <div class="identity-item">
+                            <span class="identity-icon">🛡️</span>
+                            <div class="identity-text">
+                                <strong>You are protected and secure</strong>
+                                <div class="identity-verse">Romans 8:38-39 - "Nothing can separate us from God's love"</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="step-button" onclick="completeStep3()">
+                        I Choose to Walk in Freedom
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pregnancy & Life Support Screen -->
+    <div class="screen" id="supportScreen">
+        <div class="container">
+            <div class="support-intro">
+                <h2>You Are Not Alone</h2>
+                <p>God has a plan for you and your child. His grace covers every situation.</p>
+            </div>
+
+            <div class="support-cards">
+                <div class="support-card">
+                    <h3 class="support-card-title">For Expectant Mothers</h3>
+                    <div class="support-card-content">
+                        Your courage to choose life honors God. You are not defined by how this pregnancy began, but by the love you show in protecting this precious life. God sees your strength and will provide for every need.
+                    </div>
+                    <div class="promise-card">
+                        <div class="promise-verse">
+                            "Before I formed you in the womb I knew you, before you were born I set you apart"
+                        </div>
+                        <div class="promise-ref">Jeremiah 1:5</div>
+                    </div>
+                </div>
+
+                <div class="support-card">
+                    <h3 class="support-card-title">For Expectant Fathers</h3>
+                    <div class="support-card-content">
+                        God calls you to step up with courage and responsibility. Your role matters immensely. Be the protector and provider God designed you to be. His strength will sustain you.
+                    </div>
+                    <div class="promise-card">
+                        <div class="promise-verse">
+                            "Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you"
+                        </div>
+                        <div class="promise-ref">Joshua 1:9</div>
+                    </div>
+                </div>
+
+                <div class="support-card">
+                    <h3 class="support-card-title">God's Promises Over Your Child</h3>
+                    <div class="support-card-content">
+                        Every child is a gift from God, created with divine purpose. The circumstances of conception don't diminish God's plan for this precious life. He has already written a beautiful story.
+                    </div>
+                    <div class="promise-card">
+                        <div class="promise-verse">
+                            "For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you"
+                        </div>
+                        <div class="promise-ref">Jeremiah 29:11</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="resource-links">
+                <h3 class="resource-title">Practical Support Available</h3>
+                <div class="resource-item" onclick="showToast('Contact local pregnancy resource centers for free support')">
+                    Pregnancy Resource Centers - Free confidential help
+                </div>
+                <div class="resource-item" onclick="showToast('Many churches offer support groups and practical help')">
+                    Church Family Support Networks
+                </div>
+                <div class="resource-item" onclick="showToast('Christian adoption agencies provide loving options')">
+                    Christian Adoption Services
+                </div>
+                <div class="resource-item" onclick="showToast('Free parenting classes available in most communities')">
+                    Parenting Classes & Mentorship
+                </div>
+                <div class="resource-item" onclick="showToast('Material assistance programs can help with baby supplies')">
+                    Material Assistance Programs
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Community Stories Screen -->
+    <div class="screen" id="communityScreen">
+        <div class="container">
+            <div class="community-intro">
+                <h2 class="community-title">Stories of Restoration</h2>
+                <p class="hero-subtitle">Your testimony matters. Share how God has worked in your life.</p>
+            </div>
+
+            <div class="share-box">
+                <h3 class="share-prompt">Share Your Journey (Anonymous)</h3>
+                <textarea 
+                    class="share-input" 
+                    id="storyInput"
+                    placeholder="Share your testimony of God's grace after sexual sin. How has He restored you? Your story could encourage someone else..."
+                ></textarea>
+                <div class="share-buttons">
+                    <button class="share-btn" onclick="saveStoryDraft()">Save as Draft</button>
+                    <button class="share-btn primary" onclick="publishStory()">Share Anonymously</button>
+                </div>
+            </div>
+
+            <div class="saved-stories" id="storiesContainer">
+                <h3 class="stories-title">Community Testimonies</h3>
+                <div id="storiesDisplay">
+                    <!-- Real testimonies will appear here when users share them -->
+                    <div style="text-align: center; padding: 40px 20px; color: var(--text-dim);">
+                        <p style="font-size: 1.1rem; margin-bottom: 15px;">No testimonies have been shared yet.</p>
+                        <p>When you're ready, share your story of God's grace and restoration. Your testimony could be the encouragement someone else desperately needs.</p>
+                        <p style="margin-top: 15px; font-style: italic;">"They triumphed over him by the blood of the Lamb and by the word of their testimony" - Revelation 12:11</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resources Screen -->
+    <div class="screen" id="resourcesScreen">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 30px;">Healing Resources</h2>
+
+            <div class="resources-grid">
+                <div class="resource-section">
+                    <h3 class="resource-section-title">
+                        <span>📖</span> Scripture for Healing
+                    </h3>
+                    <ul class="resource-list">
+                        <li onclick="toggleResource(this)">
+                            Verses on Complete Forgiveness
+                            <div class="expanded-content">
+                                <strong>1 John 1:9</strong> - If we confess our sins, he is faithful<br>
+                                <strong>Psalm 103:12</strong> - As far as east from west<br>
+                                <strong>Isaiah 1:18</strong> - Sins white as snow<br>
+                                <strong>Colossians 1:14</strong> - In whom we have redemption
+                            </div>
+                        </li>
+                        <li onclick="toggleResource(this)">
+                            Your Identity in Christ
+                            <div class="expanded-content">
+                                <strong>2 Corinthians 5:17</strong> - New creation<br>
+                                <strong>Romans 8:1</strong> - No condemnation<br>
+                                <strong>Galatians 2:20</strong> - Christ lives in me<br>
+                                <strong>Ephesians 2:10</strong> - God's masterpiece
+                            </div>
+                        </li>
+                        <li onclick="toggleResource(this)">
+                            Promises for Your Future
+                            <div class="expanded-content">
+                                <strong>Jeremiah 29:11</strong> - Plans to prosper<br>
+                                <strong>Romans 8:28</strong> - All things work together<br>
+                                <strong>Philippians 1:6</strong> - He will complete the work<br>
+                                <strong>Isaiah 61:3</strong> - Beauty for ashes
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="resource-section">
+                    <h3 class="resource-section-title">
+                        <span>🤲</span> Support Networks
+                    </h3>
+                    <ul class="resource-list">
+                        <li onclick="showToast('Search for grace-based churches in your area')">
+                            Finding a Grace-Based Church
+                        </li>
+                        <li onclick="showToast('Look for Celebrate Recovery or similar programs')">
+                            Sexual Integrity Support Groups
+                        </li>
+                        <li onclick="showToast('Many churches offer free biblical counseling')">
+                            Christian Counseling Services
+                        </li>
+                        <li onclick="showToast('Online communities provide 24/7 support')">
+                            Online Support Communities
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="resource-section">
+                    <h3 class="resource-section-title">
+                        <span>📚</span> Recommended Reading
+                    </h3>
+                    <ul class="resource-list">
+                        <li onclick="toggleResource(this)">
+                            Books on Grace & Forgiveness
+                            <div class="expanded-content">
+                                • "What's So Amazing About Grace?" - Philip Yancey<br>
+                                • "The Ragamuffin Gospel" - Brennan Manning<br>
+                                • "Shame Interrupted" - Edward Welch<br>
+                                • "Victory Over Darkness" - Neil Anderson
+                            </div>
+                        </li>
+                        <li onclick="toggleResource(this)">
+                            Sexual Purity & Restoration
+                            <div class="expanded-content">
+                                • "Finally Free" - Heath Lambert<br>
+                                • "Sexual Sanity for Women" - Ellen Dykas<br>
+                                • "Closing the Window" - Tim Chester<br>
+                                • "Pure Desire" - Ted Roberts
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="resource-section">
+                    <h3 class="resource-section-title">
+                        <span>🏥</span> Pregnancy Resources
+                    </h3>
+                    <ul class="resource-list">
+                        <li onclick="showToast('Free pregnancy tests and ultrasounds available')">
+                            Local Pregnancy Centers
+                        </li>
+                        <li onclick="showToast('Many organizations provide free baby supplies')">
+                            Material Assistance Programs
+                        </li>
+                        <li onclick="showToast('Free parenting education available')">
+                            Parenting Classes
+                        </li>
+                        <li onclick="showToast('Confidential adoption counseling available')">
+                            Adoption Information
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Crisis Screen -->
+    <div class="screen" id="crisisScreen">
+        <div class="container">
+            <div class="crisis-container">
+                <div class="crisis-icon-large">🤲</div>
+                <h1 class="crisis-title">You Matter to God</h1>
+                
+                <p class="crisis-text">
+                    If you're in crisis right now, please know that God sees you, loves you, and has not abandoned you. Your pain is real, but so is His presence.
+                </p>
+
+                <div class="crisis-box">
+                    <h3>Immediate Help Available</h3>
+                    <p style="font-size: 1.1rem; margin-top: 15px;">
+                        If you are in crisis, please contact your local helpline for immediate support.
+                    </p>
+                    <p style="margin-top: 15px;">
+                        You are precious. Your life has purpose. This moment of pain is not your final story.
+                    </p>
+                </div>
+
+                <div class="crisis-steps">
+                    <h3 style="color: var(--accent); margin-bottom: 20px;">Steps You Can Take Right Now</h3>
+                    
+                    <div class="crisis-step">
+                        <h4>1. Reach Out to Someone</h4>
+                        <p>Call a friend, family member, pastor, or counselor. You don't have to face this alone.</p>
+                    </div>
+                    
+                    <div class="crisis-step">
+                        <h4>2. Remember God's Truth</h4>
+                        <p>"The Lord is close to the brokenhearted and saves those who are crushed in spirit." - Psalm 34:18</p>
+                    </div>
+                    
+                    <div class="crisis-step">
+                        <h4>3. Take One Small Step</h4>
+                        <p>You don't have to solve everything today. Just take one small step toward hope.</p>
+                    </div>
+                    
+                    <div class="crisis-step">
+                        <h4>4. Hold On to Hope</h4>
+                        <p>Weeping may last for the night, but joy comes in the morning. Your story isn't over.</p>
+                    </div>
+                </div>
+
+                <button class="step-button" onclick="navigateTo('homeScreen')" style="margin-top: 30px;">
+                    Return to Hope
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal" id="infoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">How to Use This App</h2>
+                <div class="modal-close" onclick="closeModal('infoModal')">✕</div>
+            </div>
+            
+            <div class="modal-section">
+                <h3>What This App Does</h3>
+                <p>Grace After provides biblical guidance and practical support for Christians dealing with guilt and shame after premarital sex, including support for unexpected pregnancy.</p>
+            </div>
+
+            <div class="modal-section">
+                <h3>Features</h3>
+                <ul>
+                    <li>Daily devotionals with scripture and affirmations</li>
+                    <li>Three-step forgiveness pathway</li>
+                    <li>Pregnancy and parenting support resources</li>
+                    <li>Anonymous testimony sharing</li>
+                    <li>Crisis support and encouragement</li>
+                </ul>
+            </div>
+
+            <div class="modal-section">
+                <h3>Install on Your Phone</h3>
+                <p><strong>iPhone:</strong> Safari → Share → Add to Home Screen</p>
+                <p><strong>Android:</strong> Chrome Menu → Add to Home Screen</p>
+            </div>
+
+            <div class="modal-section">
+                <p style="text-align: center; font-style: italic; color: var(--text-dim);">
+                    Remember: God's grace is greater than your guilt. You are loved beyond measure.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Modal -->
+    <div class="modal" id="aboutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">About This Ministry</h2>
+                <div class="modal-close" onclick="closeModal('aboutModal')">✕</div>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Created By</h3>
+                <p>Made by <strong>Justin</strong></p>
+                <p>Depths to Heights Ministry</p>
+            </div>
+
+            <div class="modal-section">
+                <h3>Our Mission</h3>
+                <p>To guide people from the depths of guilt and shame to the heights of God's grace and restoration. We believe no one is beyond redemption.</p>
+            </div>
+
+            <div class="modal-section">
+                <h3>Contact</h3>
+                <p>📧 depthstoheights@gmail.com</p>
+                <p>🌐 <a href="https://depthstoheights.org" target="_blank" style="color: var(--primary);">depthstoheights.org</a></p>
+            </div>
+
+            <div class="modal-section" style="text-align: center;">
+                <h3>Support This Ministry</h3>
+                <p>Help us reach more people with God's grace</p>
+                <button class="donate-button" onclick="window.open('https://www.paypal.com/donate/?hosted_button_id=8GRE7B8C3TP2U', '_blank')">
+                    Donate via PayPal
+                </button>
+            </div>
+
+            <div class="modal-section">
+                <p style="text-align: center; font-style: italic; color: var(--text-dim);">
+                    "He lifted me out of the slimy pit, out of the mud and mire" - Psalm 40:2
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-items">
+            <div class="nav-item active" id="navHome" onclick="navigateTo('homeScreen')">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Home</span>
+            </div>
+            <div class="nav-item" id="navCrisis" onclick="navigateTo('crisisScreen')">
+                <span class="nav-icon">🆘</span>
+                <span class="nav-label">Crisis</span>
+            </div>
+            <div class="nav-item" id="navResources" onclick="navigateTo('resourcesScreen')">
+                <span class="nav-icon">📚</span>
+                <span class="nav-label">Resources</span>
+            </div>
+            <div class="nav-item" id="navInfo" onclick="showModal('infoModal')">
+                <span class="nav-icon">ℹ️</span>
+                <span class="nav-label">Info</span>
+            </div>
+            <div class="nav-item" id="navAbout" onclick="showModal('aboutModal')">
+                <span class="nav-icon">💜</span>
+                <span class="nav-label">About</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toast Message -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Audio Element for Background Music -->
+    <audio id="bgMusic" loop>
+        <source src="data:audio/mpeg;base64,SUQzAwAAAAAAA..." type="audio/mpeg">
+    </audio>
+
+    <script>
+        // App State
+        let currentScreen = 'homeScreen';
+        let currentDevotional = 0;
+        let currentStep = 1;
+        let musicPlaying = false;
+        
+        // Devotionals Data
+        const devotionals = [
+            {
+                reference: "1 John 1:9",
+                verse: "If we confess our sins, he is faithful and just and will forgive us our sins and purify us from all unrighteousness.",
+                title: "Understanding Complete Forgiveness",
+                teaching: "When God forgives, He forgives completely. Your confession doesn't earn His forgiveness—it positions you to receive what Jesus already purchased on the cross. The guilt you feel doesn't reflect God's view of you. He sees you through the blood of Christ: pure, holy, and deeply loved. Today, release the weight of shame and step into the freedom He offers.",
+                affirmation: "I am forgiven, restored, and made new in Christ"
+            },
+            {
+                reference: "Psalm 103:12",
+                verse: "As far as the east is from the west, so far has he removed our transgressions from us.",
+                title: "The Distance of Grace",
+                teaching: "East and west never meet—they stretch into infinity. That's the distance God has placed between you and your sin. When shame whispers lies about your past, remember that God has already forgotten. He doesn't see your failures; He sees His child. Your past is not your identity. Christ is your identity.",
+                affirmation: "My sins are infinitely removed from me"
+            },
+            {
+                reference: "2 Corinthians 5:17",
+                verse: "Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!",
+                title: "You Are Brand New",
+                teaching: "You're not a patched-up version of your old self—you're completely new. Like a butterfly that can never return to being a caterpillar, you've been fundamentally transformed. The person who committed that sin? They're gone. You are a new creation with a new nature, new desires, and a new destiny.",
+                affirmation: "I am a new creation; my old self is gone"
+            },
+            {
+                reference: "Romans 8:1",
+                verse: "Therefore, there is now no condemnation for those who are in Christ Jesus.",
+                title: "Freedom from Condemnation",
+                teaching: "No condemnation means NO condemnation—not less condemnation, not delayed condemnation, but absolutely none. The judge has declared you 'not guilty.' When your mind replays your mistakes, remember that God has already ruled in your favor. You are free. Live like it.",
+                affirmation: "I stand completely free from all condemnation"
+            },
+            {
+                reference: "Isaiah 43:25",
+                verse: "I, even I, am he who blots out your transgressions, for my own sake, and remembers your sins no more.",
+                title: "Divine Amnesia",
+                teaching: "God chooses to forget your sins. Not because He has a poor memory, but because His love for you is greater than your failures. He delights in showing mercy. When He looks at you, He doesn't see your past—He sees His beloved child, covered in the righteousness of Christ.",
+                affirmation: "God has chosen to forget my past"
+            },
+            {
+                reference: "Micah 7:19",
+                verse: "You will again have compassion on us; you will tread our sins underfoot and hurl all our iniquities into the depths of the sea.",
+                title: "Buried in the Depths",
+                teaching: "Your sins haven't been swept under the rug—they've been cast into the deepest ocean, never to resurface. God hasn't just forgiven you; He's destroyed the evidence. The accuser has no case against you because the proof is gone forever, buried in an ocean of grace.",
+                affirmation: "My sins are buried forever in God's sea of grace"
+            },
+            {
+                reference: "Colossians 1:14",
+                verse: "In whom we have redemption, the forgiveness of sins.",
+                title: "Completely Redeemed",
+                teaching: "Redemption means you've been bought back, restored to your original purpose. You're not damaged goods—you're a treasured possession. God paid the highest price for you: the blood of His Son. That's how valuable you are. Live in the freedom of being fully redeemed.",
+                affirmation: "I am redeemed and treasured by God"
+            }
+        ];
+
+        // Initialize App
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+            }, 1000);
+            
+            loadFromStorage();
+            updateDate();
+            loadDevotional(0);
+            initializeMusic();
+        });
+
+        // Navigation
+        function navigateTo(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show selected screen
+            document.getElementById(screenId).classList.add('active');
+            currentScreen = screenId;
+            
+            // Update nav
+            updateNavigation(screenId);
+            
+            // Save state
+            saveToStorage('currentScreen', screenId);
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        function updateNavigation(screenId) {
+            // Remove active from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active to current
+            if (screenId === 'homeScreen') {
+                document.getElementById('navHome').classList.add('active');
+            } else if (screenId === 'crisisScreen') {
+                document.getElementById('navCrisis').classList.add('active');
+            } else if (screenId === 'resourcesScreen') {
+                document.getElementById('navResources').classList.add('active');
+            }
+        }
+
+        // Modal Functions
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Music Functions
+        function initializeMusic() {
+            // YouTube player will be loaded with the iframe
+            // Alternatively, create ambient worship background
+            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (window.AudioContext) {
+                window.audioContext = new AudioContext();
+            }
+        }
+
+        function toggleMusic() {
+            const musicBtn = document.getElementById('musicBtn');
+            const musicIcon = document.getElementById('musicIcon');
+            const iframe = document.getElementById('youtubePlayer');
+            
+            if (musicPlaying) {
+                musicIcon.textContent = '🎵';
+                musicBtn.classList.remove('playing');
+                
+                // Try to pause YouTube player
+                if (iframe) {
+                    iframe.src = iframe.src.replace('autoplay=1', 'autoplay=0');
+                }
+                
+                // Stop Web Audio as fallback
+                stopMusic();
+                musicPlaying = false;
+            } else {
+                musicIcon.textContent = '🎶';
+                musicBtn.classList.add('playing');
+                
+                // Try to play YouTube worship music
+                if (iframe) {
+                    iframe.src = iframe.src.replace('autoplay=0', 'autoplay=1');
+                } else {
+                    // Fallback to Web Audio ambient sound
+                    playMusic();
+                }
+                
+                musicPlaying = true;
+            }
+            
+            saveToStorage('musicPlaying', musicPlaying);
+        }
+
+        function playMusic() {
+            // Fallback: Simple ambient worship tone generator
+            if (window.audioContext && !window.currentOscillator) {
+                try {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    const filter = audioContext.createBiquadFilter();
+                    
+                    // Create a more pleasant worship-like ambient sound
+                    oscillator.connect(filter);
+                    filter.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    // Set frequency to a peaceful tone (A4)
+                    oscillator.frequency.value = 440;
+                    oscillator.type = 'sine';
+                    
+                    // Add gentle filter for warmth
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 1000;
+                    
+                    // Very quiet volume
+                    gainNode.gain.value = 0.03;
+                    
+                    // Add gentle volume fade in
+                    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.03, audioContext.currentTime + 2);
+                    
+                    oscillator.start();
+                    window.currentOscillator = oscillator;
+                    
+                    // Add a second harmony tone
+                    const oscillator2 = audioContext.createOscillator();
+                    const gainNode2 = audioContext.createGain();
+                    
+                    oscillator2.connect(gainNode2);
+                    gainNode2.connect(audioContext.destination);
+                    
+                    oscillator2.frequency.value = 554.37; // C#5 for harmony
+                    oscillator2.type = 'sine';
+                    gainNode2.gain.value = 0.02;
+                    
+                    oscillator2.start();
+                    window.currentOscillator2 = oscillator2;
+                } catch (e) {
+                    console.log('Audio not available');
+                }
+            }
+        }
+
+        function stopMusic() {
+            if (window.currentOscillator) {
+                try {
+                    window.currentOscillator.stop();
+                    window.currentOscillator = null;
+                } catch (e) {}
+            }
+            if (window.currentOscillator2) {
+                try {
+                    window.currentOscillator2.stop();
+                    window.currentOscillator2 = null;
+                } catch (e) {}
+            }
+        }
+
+        // Devotional Functions
+        function updateDate() {
+            const date = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('devDate').textContent = date.toLocaleDateString('en-US', options);
+        }
+
+        function loadDevotional(index) {
+            const dev = devotionals[index];
+            document.getElementById('scriptureRef').textContent = dev.reference;
+            document.getElementById('scriptureText').textContent = dev.verse;
+            document.getElementById('teachingTitle').textContent = dev.title;
+            document.getElementById('teachingContent').textContent = dev.teaching;
+            document.getElementById('affirmationText').textContent = dev.affirmation;
+            
+            currentDevotional = index;
+            saveToStorage('currentDevotional', index);
+        }
+
+        function nextDevotional() {
+            currentDevotional = (currentDevotional + 1) % devotionals.length;
+            loadDevotional(currentDevotional);
+            showToast('Loading next devotional');
+        }
+
+        function previousDevotional() {
+            currentDevotional = (currentDevotional - 1 + devotionals.length) % devotionals.length;
+            loadDevotional(currentDevotional);
+            showToast('Loading previous devotional');
+        }
+
+        // Forgiveness Path Functions
+        function showStep(step) {
+            // Hide all steps
+            document.getElementById('step1Content').classList.remove('active');
+            document.getElementById('step2Content').classList.remove('active');
+            document.getElementById('step3Content').classList.remove('active');
+            
+            // Show selected step
+            document.getElementById('step' + step + 'Content').classList.add('active');
+            
+            // Update dots
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById('step' + i + 'Dot');
+                dot.classList.remove('active', 'completed');
+                
+                if (i < step) {
+                    dot.classList.add('completed');
+                } else if (i === step) {
+                    dot.classList.add('active');
+                }
+            }
+            
+            currentStep = step;
+            saveToStorage('currentStep', step);
+        }
+
+        function completeStep1() {
+            const confession = document.getElementById('confessionText').value;
+            if (confession.trim()) {
+                saveToStorage('confession', confession);
+                document.getElementById('step1Dot').classList.add('completed');
+                showStep(2);
+                showToast('Your confession has been heard. You are forgiven.');
+            } else {
+                showToast('Take your time. Share your heart when ready.');
+            }
+        }
+
+        function completeStep2() {
+            document.getElementById('step2Dot').classList.add('completed');
+            showStep(3);
+            showToast('You are completely forgiven. Walk in freedom!');
+        }
+
+        function completeStep3() {
+            document.getElementById('step3Dot').classList.add('completed');
+            showToast('You are free! Your new life begins now.');
+            saveToStorage('pathCompleted', new Date().toISOString());
+            
+            setTimeout(() => {
+                navigateTo('homeScreen');
+            }, 2000);
+        }
+
+        // Community Functions
+        function saveStoryDraft() {
+            const story = document.getElementById('storyInput').value;
+            if (story.trim()) {
+                saveToStorage('storyDraft', story);
+                showToast('Draft saved locally');
+            }
+        }
+
+        function publishStory() {
+            const story = document.getElementById('storyInput').value;
+            if (story.trim()) {
+                // Save to local stories
+                const stories = JSON.parse(localStorage.getItem('graceAfter_stories') || '[]');
+                stories.push({
+                    content: story,
+                    date: new Date().toISOString(),
+                    author: 'Anonymous'
+                });
+                localStorage.setItem('graceAfter_stories', JSON.stringify(stories));
+                
+                // Clear input
+                document.getElementById('storyInput').value = '';
+                
+                // Add to display
+                addStoryToDisplay(story);
+                
+                showToast('Your testimony has been shared anonymously');
+            }
+        }
+
+        function addStoryToDisplay(content) {
+            const container = document.getElementById('storiesContainer');
+            const storyHTML = `
+                <div class="story-card" style="animation: fadeIn 0.5s;">
+                    <div class="story-header">
+                        <div class="story-icon">💚</div>
+                        <div class="story-meta">
+                            <div class="story-author">Anonymous</div>
+                            <div class="story-date">Just now</div>
+                        </div>
+                    </div>
+                    <div class="story-content">${content}</div>
+                    <span class="story-tag">New Testimony</span>
+                </div>
+            `;
+            
+            const template = document.createElement('div');
+            template.innerHTML = storyHTML;
+            container.appendChild(template.firstElementChild);
+        }
+
+        // Resource Functions
+        function toggleResource(element) {
+            const expanded = element.querySelector('.expanded-content');
+            if (expanded) {
+                expanded.classList.toggle('show');
+            }
+        }
+
+        // Storage Functions
+        function saveToStorage(key, value) {
+            localStorage.setItem('graceAfter_' + key, JSON.stringify(value));
+        }
+
+        function loadFromStorage() {
+            // Load saved confession
+            const confession = localStorage.getItem('graceAfter_confession');
+            if (confession) {
+                document.getElementById('confessionText').value = JSON.parse(confession);
+            }
+            
+            // Load story draft
+            const draft = localStorage.getItem('graceAfter_storyDraft');
+            if (draft) {
+                document.getElementById('storyInput').value = JSON.parse(draft);
+            }
+            
+            // Load current step
+            const step = localStorage.getItem('graceAfter_currentStep');
+            if (step) {
+                currentStep = JSON.parse(step);
+                showStep(currentStep);
+            }
+            
+            // Load devotional
+            const dev = localStorage.getItem('graceAfter_currentDevotional');
+            if (dev) {
+                currentDevotional = JSON.parse(dev);
+                loadDevotional(currentDevotional);
+            }
+            
+            // Load stories
+            const stories = localStorage.getItem('graceAfter_stories');
+            if (stories) {
+                const storiesArray = JSON.parse(stories);
+                storiesArray.forEach(story => {
+                    addStoryToDisplay(story.content);
+                });
+            }
+        }
+
+        // Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Prevent accidental navigation
+        window.addEventListener('beforeunload', function(e) {
+            const confession = document.getElementById('confessionText').value;
+            const story = document.getElementById('storyInput').value;
+            
+            if (confession || story) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
+</body>
+</html>
